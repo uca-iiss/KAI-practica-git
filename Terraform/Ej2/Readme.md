@@ -1,6 +1,6 @@
 Pasos para la instalación de la infraestructura del ejercicio 2:
 -
-En este segundo ejercicio enfocaremos la resolución con los siguientes ficheros:
+En este segundo ejercicio enfocaremos la resolución con los siguientes ficheros, que incluiremos dentro de una carpeta con nombre por ejemplo, **mi-proyecto-terraform**:
 
 - providers.tf
 - wordpress.tf
