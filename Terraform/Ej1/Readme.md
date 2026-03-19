@@ -1,6 +1,8 @@
 Pasos para instalar la infraestructura del ejercicio 1:
 -
-- terraform init: con este comando se encarga de inicializar el proyecto. Es el responsable de descargar los proveedores, configurar el entorno y preparar la infraestructura.ç
+- En primer lugar se han de descargar los archivos existentes en esta carpeta (a saber Ej1). Dichos archivos han de colocarse en la carpeta deseada.
+- A continuacion se usarán, en orden, los siguientes comandos para la instalación de la infraestructura.
+- terraform init: con este comando se encarga de inicializar el proyecto. Es el responsable de descargar los proveedores, configurar el entorno y preparar la infraestructura.
   
 - terraform fmt: el comando ayuda a dar estructura a todos los archivos .tf que se encuentren en la infraestructura para que estos se adapten al estándar. No realiza cambios mayores, solo mejoras de legibilidad, como identaciones o espacios.
   
