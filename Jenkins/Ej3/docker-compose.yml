@@ -1,0 +1,47 @@
+services:
+  docker:
+    image: docker:dind
+    container_name: jenkins-docker
+    privileged: true
+    restart: unless-stopped
+    # Controlador de almacenamiento a utilizar (OMITIR EN WINDOWS):
+    command: ["--storage-driver=overlay2"]
+  environment:
+    - DOCKER_TLS_CERTDIR=/certs # Habilita TLS para Docker
+  volumes:
+    - jenkins-docker-certs:/certs/client
+    - jenkins-data:/var/jenkins_home
+  ports:
+    - "2376:2376" # Puerto para la API de Docker
+    - "3000:3000" # Puerto para la aplicación React
+  networks:
+    jenkins:
+      aliases:
+        - docker
+  jenkins:
+    image: my-custom-jenkins
+    build: .
+    container_name: jenkins
+    restart: on-failure
+    depends_on: 
+      - docker
+    environment:
+      - DOCKER_HOST=tcp://docker:2376
+      - DOCKER_CERT_PATH=/certs/client
+      - DOCKER_TLS_VERIFY=1
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - jenkins-docker-certs:/certs/client:ro
+    networks:
+      - jenkins
+volumes: 
+  jenkins-data:
+    name: jenkins-data
+  jenkins-docker-certs:
+    name: jenkins-docker-certs
+networks:
+  jenkins:
+    name: jenkins
