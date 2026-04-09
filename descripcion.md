@@ -1,2 +1,0 @@
-En esta práctica los alumnos Kevin Bauti Huelva y Ana Isabel Brenes Ramírez, están creando un repositorio de github que contiene un archivo autores.txt y el archivo .gitignore. Esto se ha subido del repositorio local al repositorio remoto.
-Mientras se elabora este texto se están creando dos ramas de trabajo para ser fusionadas posteriormente. Más adelante se eliminarán ambas ramas previo a la entrega.
