@@ -15,7 +15,7 @@ pipeline {
         pollSCM('H * * * *')
     }
     parameters {
-        string(name: 'MARKDOWN_FILE', defaultValue: 'Jenkins/Ej3/origen.md', description: 'Nombre del archivo markdown en la carpeta Ej3')
+        string(name: 'MARKDOWN_FILE', defaultValue: 'origen.md', description: 'Nombre del archivo markdown en la carpeta Ej3')
     }
 
     stages {
@@ -38,12 +38,16 @@ pipeline {
                 dir('Jenkins/Ej3') {
                     sh '''
                         mkdir -p pdf
-                        if [ ! -f "$MARKDOWN_FILE" ]; then
+                        MD_FILE="$MARKDOWN_FILE"
+                        if [ ! -f "$MD_FILE" ]; then
+                            MD_FILE="$(basename "$MARKDOWN_FILE")"
+                        fi
+                        if [ ! -f "$MD_FILE" ]; then
                             echo "No existe el archivo markdown: $MARKDOWN_FILE"
                             exit 1
                         fi
-                        BASENAME="$(basename "$MARKDOWN_FILE" .md)"
-                        npx marp "$MARKDOWN_FILE" --pdf --output "pdf/${BASENAME}.pdf"
+                        BASENAME="$(basename "$MD_FILE" .md)"
+                        npx marp "$MD_FILE" --pdf --output "pdf/${BASENAME}.pdf"
                     '''
                 }
             }
