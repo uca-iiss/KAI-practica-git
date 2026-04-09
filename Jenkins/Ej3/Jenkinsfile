@@ -15,7 +15,7 @@ pipeline {
         pollSCM('H * * * *')
     }
     parameters {
-        string(name: 'MARKDOWN_FILE', defaultValue: 'origen.md', description: 'Nombre del archivo markdown en la carpeta Ej3')
+        string(name: 'MARKDOWN_FILE', defaultValue: 'Jenkins/Ej3/origen.md', description: 'Nombre del archivo markdown en la carpeta Ej3')
     }
 
     stages {
