@@ -1,6 +1,9 @@
 pipeline {
     agent {
-        dockerfile true
+        dockerfile {
+            filename 'Dockerfile'
+            dir 'Ej3'
+        }
     }
     
     options {
