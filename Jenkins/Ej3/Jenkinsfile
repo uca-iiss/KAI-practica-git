@@ -15,7 +15,7 @@ pipeline {
         pollSCM('H * * * *')
     }
     parameters {
-        string(name: 'MARKDOWN_FILE', defaultValue: 'Jenkins/Ej3origen.md', description: 'Nombre del archivo markdown a procesar')
+        string(name: 'MARKDOWN_FILE', defaultValue: 'Jenkins/Ej3/origen.md', description: 'Nombre del archivo markdown a procesar')
         string(name: 'GIT_CREDENTIALS_ID', defaultValue: 'GitToken for Jekins Ej3', description: 'ID de credencial Jenkins para push a GitHub')
         string(name: 'TARGET_BRANCH', defaultValue: 'entrega-jenkins', description: 'Rama destino para subir el PDF')
     }
