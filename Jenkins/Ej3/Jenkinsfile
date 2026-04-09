@@ -27,27 +27,31 @@ pipeline {
 
         stage('Instalacion de dependencias') {
             steps {
-                sh 'npm install --no-save @marp-team/marp-cli'
+                dir('Jenkins/Ej3') {
+                    sh 'npm install --no-save @marp-team/marp-cli'
+                }
             }
         }
 
         stage('Generacion del PDF') {
             steps {
-                sh '''
-                    mkdir -p pdf
-                    if [ ! -f "$MARKDOWN_FILE" ]; then
-                        echo "No existe el archivo markdown: $MARKDOWN_FILE"
-                        exit 1
-                    fi
-                    BASENAME="$(basename "$MARKDOWN_FILE" .md)"
-                    npx marp "$MARKDOWN_FILE" --pdf --output "pdf/${BASENAME}.pdf"
-                '''
+                dir('Jenkins/Ej3') {
+                    sh '''
+                        mkdir -p pdf
+                        if [ ! -f "$MARKDOWN_FILE" ]; then
+                            echo "No existe el archivo markdown: $MARKDOWN_FILE"
+                            exit 1
+                        fi
+                        BASENAME="$(basename "$MARKDOWN_FILE" .md)"
+                        npx marp "$MARKDOWN_FILE" --pdf --output "pdf/${BASENAME}.pdf"
+                    '''
+                }
             }
         }
 
         stage('Archivado del artefacto') {
             steps {
-                archiveArtifacts artifacts: 'pdf/*.pdf', fingerprint: true, onlyIfSuccessful: true
+                archiveArtifacts artifacts: 'Jenkins/Ej3/pdf/*.pdf', fingerprint: true, onlyIfSuccessful: true
             }
         }
     }
