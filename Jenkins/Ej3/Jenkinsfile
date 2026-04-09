@@ -37,7 +37,6 @@ pipeline {
         stage('Generacion del PDF') {
             steps {
                 sh '''
-                    mkdir -p Jenkins/Ej3/pdf
                     if [ ! -f "$MARKDOWN_FILE" ]; then
                         echo "No existe el archivo markdown: $MARKDOWN_FILE"
                         exit 1
