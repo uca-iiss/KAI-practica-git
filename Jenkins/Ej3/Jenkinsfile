@@ -50,7 +50,7 @@ pipeline {
                     fi
 
                     BASENAME="$(basename "$MARKDOWN_PATH" .md)"
-                    Jenkins/Ej3/node_modules/.bin/marp "$MARKDOWN_PATH" --pdf --output "Jenkins/Ej3/pdf/${BASENAME}.pdf"
+                    npx --yes @marp-team/marp-cli "$MARKDOWN_PATH" --pdf --output "Jenkins/Ej3/pdf/${BASENAME}.pdf"
                 '''
             }
         }
