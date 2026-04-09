@@ -1,0 +1,29 @@
+* commit 661d051d48365a56eeea678bc017fefbe940d206 (HEAD -> main, origin/main, origin/feature/licencia, origin/HEAD, feature/licencia)
+| Author: Ana Isabel <anaisabelbrenesrz@gmail.com>
+| Date:   2026-02-24 20:07:44 +0100
+| 
+|     Añadido archivo LICENSE.md
+| 
+* commit 6015813636a3b014f95cc10f29f49d6c78ead599 (origin/feature/descripcion, feature/descripcion)
+| Author: Kevin Bauti Huelva <ke.bauhuel@alum.uca.es>
+| Date:   2026-02-24 20:06:48 +0100
+| 
+|     Creación descripcion.md
+| 
+* commit c6e846b025c954e354af8d94566ffdf0e4d9d983
+| Author: Ana Isabel <anaisabelbrenesrz@gmail.com>
+| Date:   2026-02-24 19:58:37 +0100
+| 
+|     Inclusion de nuevo autor
+| 
+* commit 246bd5128a16f9bace326ce6c4135973bbd35e1d
+| Author: Kevin Bauti Huelva <ke.bauhuel@alum.uca.es>
+| Date:   2026-02-24 19:46:40 +0100
+| 
+|     Creacion .gitignore
+| 
+* commit c6477a544fc93cdab2d3d0b54dcbe9fe7d3bedcf
+  Author: Kevin Bauti Huelva <ke.bauhuel@alum.uca.es>
+  Date:   2026-02-24 19:37:31 +0100
+  
+      Creacion autores.txt
