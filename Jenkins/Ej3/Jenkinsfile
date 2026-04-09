@@ -15,7 +15,7 @@ pipeline {
         pollSCM('H * * * *')
     }
     parameters {
-        string(name: 'MARKDOWN_FILE', defaultValue: 'Jenkins/Ej3/origen.md', description: 'Nombre del archivo markdown en la carpeta Ej3')
+        string(name: 'MARKDOWN_FILE', defaultValue: 'origen.md', description: 'Nombre del archivo markdown en la carpeta Ej3')
         string(name: 'GITHUB_CREDENTIALS_ID', defaultValue: 'GitToken for Jekins Ej3', description: 'Credentials ID de Jenkins para hacer push a GitHub')
     }
 
@@ -72,7 +72,7 @@ pipeline {
                         git commit -m "Actualizar PDFs generados por Jenkins"
 
                         ORIGIN_URL="$(git config --get remote.origin.url)"
-                        AUTH_URL="${ORIGIN_URL/https:\/\//https://$GIT_USER:$GIT_TOKEN@}"
+                        AUTH_URL="$(printf '%s' "$ORIGIN_URL" | sed "s#https://#https://$GIT_USER:$GIT_TOKEN@#")"
                         TARGET_BRANCH="${BRANCH_NAME:-$(git rev-parse --abbrev-ref HEAD)}"
                         git push "$AUTH_URL" HEAD:${TARGET_BRANCH}
                     '''
