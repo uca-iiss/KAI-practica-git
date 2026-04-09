@@ -15,8 +15,7 @@ pipeline {
         pollSCM('H * * * *')
     }
     parameters {
-        string(name: 'MARKDOWN_FILE', defaultValue: 'Jenkins/Ej3/origen.md', description: 'Ruta del archivo markdown a procesar')
-        string(name: 'GITHUB_CREDENTIALS_ID', defaultValue: 'GitToken for Jekins Ej3', description: 'Credentials ID de Jenkins para hacer push a GitHub')
+        string(name: 'MARKDOWN_FILE', defaultValue: 'Jenkins/Ej3/origen.md', description: 'Nombre del archivo markdown en la carpeta Ej3')
     }
 
     stages {
@@ -36,61 +35,23 @@ pipeline {
 
         stage('Generacion del PDF') {
             steps {
-                sh '''
-                    mkdir -p Jenkins/Ej3/pdf
-                    FILE_TO_PROCESS="$MARKDOWN_FILE"
-
-                    # Permite pasar solo el nombre (ej: origen.md)
-                    if [ ! -f "$FILE_TO_PROCESS" ] && [ -f "Jenkins/Ej3/$FILE_TO_PROCESS" ]; then
-                        FILE_TO_PROCESS="Jenkins/Ej3/$FILE_TO_PROCESS"
-                    fi
-
-                    # Corrige un error comun: Jenkins/Ej3origen.md -> Jenkins/Ej3/origen.md
-                    if [ ! -f "$FILE_TO_PROCESS" ]; then
-                        CANDIDATE="$(printf '%s' "$FILE_TO_PROCESS" | sed 's#^Jenkins/Ej3\([^/]\)#Jenkins/Ej3/\1#')"
-                        if [ -f "$CANDIDATE" ]; then
-                            FILE_TO_PROCESS="$CANDIDATE"
+                dir('Jenkins/Ej3') {
+                    sh '''
+                        mkdir -p pdf
+                        if [ ! -f "$MARKDOWN_FILE" ]; then
+                            echo "No existe el archivo markdown: $MARKDOWN_FILE"
+                            exit 1
                         fi
-                    fi
-
-                    if [ ! -f "$FILE_TO_PROCESS" ]; then
-                        echo "No existe el archivo markdown: $MARKDOWN_FILE"
-                        exit 1
-                    fi
-
-                    BASENAME="$(basename "$FILE_TO_PROCESS" .md)"
-                    npx --prefix Jenkins/Ej3 marp "$FILE_TO_PROCESS" --pdf --output "Jenkins/Ej3/pdf/${BASENAME}.pdf"
-                '''
+                        BASENAME="$(basename "$MARKDOWN_FILE" .md)"
+                        npx marp "$MARKDOWN_FILE" --pdf --output "pdf/${BASENAME}.pdf"
+                    '''
+                }
             }
         }
 
         stage('Archivado del artefacto') {
             steps {
                 archiveArtifacts artifacts: 'Jenkins/Ej3/pdf/*.pdf', fingerprint: true, onlyIfSuccessful: true
-            }
-        }
-
-        stage('Subir PDF a GitHub') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: params.GITHUB_CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
-                    sh '''
-                        git config user.name "Jenkins"
-                        git config user.email "jenkins@local"
-
-                        git add Jenkins/Ej3/pdf/*.pdf
-                        if git diff --staged --quiet; then
-                            echo "No hay cambios para subir"
-                            exit 0
-                        fi
-
-                        git commit -m "Actualizar PDFs generados por Jenkins"
-
-                        ORIGIN_URL="$(git config --get remote.origin.url)"
-                        AUTH_URL="$(printf '%s' "$ORIGIN_URL" | sed "s#https://#https://$GIT_USER:$GIT_TOKEN@#")"
-                        TARGET_BRANCH="${BRANCH_NAME:-$(git rev-parse --abbrev-ref HEAD)}"
-                        git push "$AUTH_URL" HEAD:${TARGET_BRANCH}
-                    '''
-                }
             }
         }
     }
