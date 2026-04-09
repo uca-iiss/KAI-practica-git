@@ -1,0 +1,351 @@
+Started by user Ana Isabel
+Obtained Jenkinsfile from git https://github.com/uca-iiss/simple-python-pyinstaller-app.git
+[Pipeline] Start of Pipeline
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/pipelinepython
+[Pipeline] {
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential github-token-jenkins
+Cloning the remote Git repository
+Cloning repository https://github.com/uca-iiss/simple-python-pyinstaller-app.git
+ > git init /var/jenkins_home/workspace/pipelinepython # timeout=10
+Fetching upstream changes from https://github.com/uca-iiss/simple-python-pyinstaller-app.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_ASKPASS to set credentials 
+ > git fetch --tags --force --progress -- https://github.com/uca-iiss/simple-python-pyinstaller-app.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/uca-iiss/simple-python-pyinstaller-app.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision cebbedf4e976521afc1c27ea6fd4c86cfa044028 (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f cebbedf4e976521afc1c27ea6fd4c86cfa044028 # timeout=10
+Commit message: "Correccion de nombre del fichero Jenkinsfile"
+First time build. Skipping changelog.
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker inspect -f . python:3.12.0-alpine3.18
+
+error: no such object: python:3.12.0-alpine3.18
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker pull python:3.12.0-alpine3.18
+3.12.0-alpine3.18: Pulling from library/python
+c926b61bad3b: Pulling fs layer
+2bcb605b85d2: Pulling fs layer
+643a60433225: Pulling fs layer
+932eacc0db21: Pulling fs layer
+b67d3e2c29c5: Pulling fs layer
+b67d3e2c29c5: Waiting
+932eacc0db21: Waiting
+c926b61bad3b: Verifying Checksum
+c926b61bad3b: Download complete
+2bcb605b85d2: Verifying Checksum
+2bcb605b85d2: Download complete
+c926b61bad3b: Pull complete
+932eacc0db21: Verifying Checksum
+932eacc0db21: Download complete
+643a60433225: Verifying Checksum
+643a60433225: Download complete
+2bcb605b85d2: Pull complete
+b67d3e2c29c5: Verifying Checksum
+b67d3e2c29c5: Download complete
+643a60433225: Pull complete
+932eacc0db21: Pull complete
+b67d3e2c29c5: Pull complete
+Digest: sha256:09f18c1f8ca777f63934b415af9a781a0e5aaba5e005ba0475cba71bb3e8e609
+Status: Downloaded newer image for python:3.12.0-alpine3.18
+docker.io/library/python:3.12.0-alpine3.18
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] withDockerContainer
+Jenkins seems to be running inside container 8debae0598fba9e155ee9d113918e99c7bfc398543aaf6553e397e2d6d1cf805
+but /var/jenkins_home/workspace/pipelinepython could not be found among []
+but /var/jenkins_home/workspace/pipelinepython@tmp could not be found among []
+$ docker run -t -d -u 1000:1000 -w /var/jenkins_home/workspace/pipelinepython -v /var/jenkins_home/workspace/pipelinepython:/var/jenkins_home/workspace/pipelinepython:rw,z -v /var/jenkins_home/workspace/pipelinepython@tmp:/var/jenkins_home/workspace/pipelinepython@tmp:rw,z -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** python:3.12.0-alpine3.18 cat
+$ docker top 8d76e248f17d9fbf968920dc7d15ff8dd0430d6101391e172a92597300ac0f18 -eo pid,comm
+[Pipeline] {
+[Pipeline] sh
++ python3 -m py_compile sources/add2vals.py sources/calc.py
+[Pipeline] stash
+Stashed 3 file(s)
+[Pipeline] }
+$ docker stop --time=1 8d76e248f17d9fbf968920dc7d15ff8dd0430d6101391e172a92597300ac0f18
+$ docker rm -f --volumes 8d76e248f17d9fbf968920dc7d15ff8dd0430d6101391e172a92597300ac0f18
+[Pipeline] // withDockerContainer
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/pipelinepython
+[Pipeline] {
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential github-token-jenkins
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/pipelinepython/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/uca-iiss/simple-python-pyinstaller-app.git # timeout=10
+Fetching upstream changes from https://github.com/uca-iiss/simple-python-pyinstaller-app.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_ASKPASS to set credentials 
+ > git fetch --tags --force --progress -- https://github.com/uca-iiss/simple-python-pyinstaller-app.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision cebbedf4e976521afc1c27ea6fd4c86cfa044028 (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f cebbedf4e976521afc1c27ea6fd4c86cfa044028 # timeout=10
+Commit message: "Correccion de nombre del fichero Jenkinsfile"
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker inspect -f . qnib/pytest
+
+error: no such object: qnib/pytest
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker pull qnib/pytest
+Using default tag: latest
+latest: Pulling from qnib/pytest
+f2b6b4884fc8: Pulling fs layer
+4fb899b4df21: Pulling fs layer
+74eaa8be7221: Pulling fs layer
+2d6e98fe4040: Pulling fs layer
+414666f7554d: Pulling fs layer
+bb0bcc8d7f6a: Pulling fs layer
+48c658404050: Pulling fs layer
+017da2081734: Pulling fs layer
+db789acdfe25: Pulling fs layer
+6f32167f8494: Pulling fs layer
+2d6e98fe4040: Waiting
+48c658404050: Waiting
+414666f7554d: Waiting
+db789acdfe25: Waiting
+bb0bcc8d7f6a: Waiting
+6f32167f8494: Waiting
+4fb899b4df21: Verifying Checksum
+4fb899b4df21: Download complete
+74eaa8be7221: Verifying Checksum
+74eaa8be7221: Download complete
+414666f7554d: Verifying Checksum
+414666f7554d: Download complete
+f2b6b4884fc8: Verifying Checksum
+f2b6b4884fc8: Download complete
+48c658404050: Verifying Checksum
+48c658404050: Download complete
+bb0bcc8d7f6a: Verifying Checksum
+bb0bcc8d7f6a: Download complete
+017da2081734: Verifying Checksum
+017da2081734: Download complete
+6f32167f8494: Verifying Checksum
+6f32167f8494: Download complete
+db789acdfe25: Verifying Checksum
+db789acdfe25: Download complete
+2d6e98fe4040: Verifying Checksum
+2d6e98fe4040: Download complete
+f2b6b4884fc8: Pull complete
+4fb899b4df21: Pull complete
+74eaa8be7221: Pull complete
+2d6e98fe4040: Pull complete
+414666f7554d: Pull complete
+bb0bcc8d7f6a: Pull complete
+48c658404050: Pull complete
+017da2081734: Pull complete
+db789acdfe25: Pull complete
+6f32167f8494: Pull complete
+Digest: sha256:02a659c938f1d1a89dbdcc2593dde1f9ffeb3ee5edc4379e93c6d84b77ad5ad6
+Status: Downloaded newer image for qnib/pytest:latest
+docker.io/qnib/pytest:latest
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] withDockerContainer
+Jenkins seems to be running inside container 8debae0598fba9e155ee9d113918e99c7bfc398543aaf6553e397e2d6d1cf805
+but /var/jenkins_home/workspace/pipelinepython could not be found among []
+but /var/jenkins_home/workspace/pipelinepython@tmp could not be found among []
+$ docker run -t -d -u 1000:1000 -w /var/jenkins_home/workspace/pipelinepython -v /var/jenkins_home/workspace/pipelinepython:/var/jenkins_home/workspace/pipelinepython:rw,z -v /var/jenkins_home/workspace/pipelinepython@tmp:/var/jenkins_home/workspace/pipelinepython@tmp:rw,z -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** qnib/pytest cat
+$ docker top bfbac285ae1aca3e458e2ae4e6cb21a305afc34f4376a8709cad85b97e65b407 -eo pid,comm
+[Pipeline] {
+[Pipeline] sh
++ py.test --junit-xml test-reports/results.xml sources/test_calc.py
+============================= test session starts ==============================
+platform linux2 -- Python 2.7.14, pytest-3.5.0, py-1.5.3, pluggy-0.6.0
+rootdir: /var/jenkins_home/workspace/pipelinepython, inifile:
+plugins: cov-2.5.1
+collected 5 items
+
+sources/test_calc.py .....                                               [100%]
+
+ generated xml file: /var/jenkins_home/workspace/pipelinepython/test-reports/results.xml 
+=========================== 5 passed in 0.01 seconds ===========================
+Post stage
+[Pipeline] junit
+Recording test results
+[Checks API] No suitable checks publisher found.
+[Pipeline] }
+$ docker stop --time=1 bfbac285ae1aca3e458e2ae4e6cb21a305afc34f4376a8709cad85b97e65b407
+$ docker rm -f --volumes bfbac285ae1aca3e458e2ae4e6cb21a305afc34f4376a8709cad85b97e65b407
+[Pipeline] // withDockerContainer
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deliver)
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/pipelinepython
+[Pipeline] {
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential github-token-jenkins
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/pipelinepython/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/uca-iiss/simple-python-pyinstaller-app.git # timeout=10
+Fetching upstream changes from https://github.com/uca-iiss/simple-python-pyinstaller-app.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+using GIT_ASKPASS to set credentials 
+ > git fetch --tags --force --progress -- https://github.com/uca-iiss/simple-python-pyinstaller-app.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+Checking out Revision cebbedf4e976521afc1c27ea6fd4c86cfa044028 (refs/remotes/origin/master)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f cebbedf4e976521afc1c27ea6fd4c86cfa044028 # timeout=10
+Commit message: "Correccion de nombre del fichero Jenkinsfile"
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] dir
+Running in /var/jenkins_home/workspace/pipelinepython/4
+[Pipeline] {
+[Pipeline] unstash
+[Pipeline] sh
++ pwd
++ docker run --rm -v /var/jenkins_home/workspace/pipelinepython/4/sources:/src cdrx/pyinstaller-linux:python3 pyinstaller -F add2vals.py
+Unable to find image 'cdrx/pyinstaller-linux:python3' locally
+python3: Pulling from cdrx/pyinstaller-linux
+d8868e50ac4c: Pulling fs layer
+83251ac64627: Pulling fs layer
+589bba2f1b36: Pulling fs layer
+d62ecaceda39: Pulling fs layer
+6d93b41cfc6b: Pulling fs layer
+7ddb031bca6e: Pulling fs layer
+df7ad3892e89: Pulling fs layer
+6d93b41cfc6b: Waiting
+7ddb031bca6e: Waiting
+df7ad3892e89: Waiting
+d62ecaceda39: Waiting
+83251ac64627: Verifying Checksum
+83251ac64627: Download complete
+589bba2f1b36: Verifying Checksum
+589bba2f1b36: Download complete
+d62ecaceda39: Verifying Checksum
+d62ecaceda39: Download complete
+6d93b41cfc6b: Verifying Checksum
+6d93b41cfc6b: Download complete
+d8868e50ac4c: Verifying Checksum
+d8868e50ac4c: Download complete
+7ddb031bca6e: Verifying Checksum
+7ddb031bca6e: Download complete
+df7ad3892e89: Verifying Checksum
+df7ad3892e89: Download complete
+d8868e50ac4c: Pull complete
+83251ac64627: Pull complete
+589bba2f1b36: Pull complete
+d62ecaceda39: Pull complete
+6d93b41cfc6b: Pull complete
+7ddb031bca6e: Pull complete
+df7ad3892e89: Pull complete
+Digest: sha256:f0bbc6ae77219dfbf004d1c4dd5f146960ba86c2bba7f971446e46870f837e66
+Status: Downloaded newer image for cdrx/pyinstaller-linux:python3
+bash: cannot set terminal process group (-1): Inappropriate ioctl for device
+bash: no job control in this shell
+pyinstaller -F add2vals.py
+48 INFO: PyInstaller: 3.6
+48 INFO: Python: 3.7.5
+49 INFO: Platform: Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-debian-wheezy-sid
+49 INFO: wrote /src/add2vals.spec
+52 INFO: UPX is available.
+54 INFO: Extending PYTHONPATH with paths
+['/src', '/src']
+54 INFO: checking Analysis
+54 INFO: Building Analysis because Analysis-00.toc is non existent
+54 INFO: Initializing module dependency graph...
+55 INFO: Caching module graph hooks...
+59 INFO: Analyzing base_library.zip ...
+3221 INFO: Caching module dependency graph...
+3293 INFO: running Analysis Analysis-00.toc
+3310 INFO: Analyzing /src/add2vals.py
+3314 INFO: Processing module hooks...
+3315 INFO: Loading module hook "hook-pydoc.py"...
+3315 INFO: Loading module hook "hook-encodings.py"...
+3370 INFO: Loading module hook "hook-xml.py"...
+3600 INFO: Looking for ctypes DLLs
+3600 INFO: Analyzing run-time hooks ...
+3610 INFO: Looking for dynamic libraries
+3930 INFO: Looking for eggs
+3931 INFO: Using Python library /root/.pyenv/versions/3.7.5/lib/libpython3.7m.so.1.0
+3934 INFO: Warnings written to /src/build/add2vals/warn-add2vals.txt
+3954 INFO: Graph cross-reference written to /src/build/add2vals/xref-add2vals.html
+3967 INFO: checking PYZ
+3967 INFO: Building PYZ because PYZ-00.toc is non existent
+3967 INFO: Building PYZ (ZlibArchive) /src/build/add2vals/PYZ-00.pyz
+4337 INFO: Building PYZ (ZlibArchive) /src/build/add2vals/PYZ-00.pyz completed successfully.
+4343 INFO: checking PKG
+4343 INFO: Building PKG because PKG-00.toc is non existent
+4343 INFO: Building PKG (CArchive) PKG-00.pkg
+11585 INFO: Building PKG (CArchive) PKG-00.pkg completed successfully.
+11588 INFO: Bootloader /root/.pyenv/versions/3.7.5/lib/python3.7/site-packages/PyInstaller/bootloader/Linux-64bit/run
+11588 INFO: checking EXE
+11588 INFO: Building EXE because EXE-00.toc is non existent
+11588 INFO: Building EXE from EXE-00.toc
+11589 INFO: Appending archive to ELF section in EXE /src/dist/add2vals
+11613 INFO: Building EXE from EXE-00.toc completed successfully.
+[Pipeline] }
+[Pipeline] // dir
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] sh
++ pwd
++ docker run --rm -v /var/jenkins_home/workspace/pipelinepython/sources:/src cdrx/pyinstaller-linux:python3 rm -rf build dist
+bash: cannot set terminal process group (-1): Inappropriate ioctl for device
+bash: no job control in this shell
+rm -rf build dist
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] End of Pipeline
+Finished: SUCCESS
