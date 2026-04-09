@@ -6,18 +6,18 @@ services:
     restart: unless-stopped
     # Controlador de almacenamiento a utilizar (OMITIR EN WINDOWS):
     command: ["--storage-driver=overlay2"]
-  environment:
-    - DOCKER_TLS_CERTDIR=/certs # Habilita TLS para Docker
-  volumes:
-    - jenkins-docker-certs:/certs/client
-    - jenkins-data:/var/jenkins_home
-  ports:
-    - "2376:2376" # Puerto para la API de Docker
-    - "3000:3000" # Puerto para la aplicación React
-  networks:
-    jenkins:
-      aliases:
-        - docker
+    environment:
+      - DOCKER_TLS_CERTDIR=/certs # Habilita TLS para Docker
+    volumes:
+      - jenkins-docker-certs:/certs/client
+      - jenkins-data:/var/jenkins_home
+    ports:
+      - "2376:2376" # Puerto para la API de Docker
+      - "3000:3000" # Puerto para la aplicación React
+    networks:
+      jenkins:
+        aliases:
+          - docker
   jenkins:
     image: my-custom-jenkins
     build: .
