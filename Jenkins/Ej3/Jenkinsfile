@@ -36,7 +36,7 @@ pipeline {
 
         stage('Generacion del PDF') {
             steps {
-                dir('Jenkins/Ej3') {
+                dir('Jenkins/Ej3/') {
                     sh '''
                         mkdir -p pdf
                         if [ ! -f "$MARKDOWN_FILE" ]; then
