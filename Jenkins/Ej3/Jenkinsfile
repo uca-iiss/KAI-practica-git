@@ -37,12 +37,29 @@ pipeline {
         stage('Generacion del PDF') {
             steps {
                 sh '''
-                    if [ ! -f "$MARKDOWN_FILE" ]; then
+                    mkdir -p Jenkins/Ej3/pdf
+                    FILE_TO_PROCESS="$MARKDOWN_FILE"
+
+                    # Permite pasar solo el nombre (ej: origen.md)
+                    if [ ! -f "$FILE_TO_PROCESS" ] && [ -f "Jenkins/Ej3/$FILE_TO_PROCESS" ]; then
+                        FILE_TO_PROCESS="Jenkins/Ej3/$FILE_TO_PROCESS"
+                    fi
+
+                    # Corrige un error comun: Jenkins/Ej3origen.md -> Jenkins/Ej3/origen.md
+                    if [ ! -f "$FILE_TO_PROCESS" ]; then
+                        CANDIDATE="$(printf '%s' "$FILE_TO_PROCESS" | sed 's#^Jenkins/Ej3\([^/]\)#Jenkins/Ej3/\1#')"
+                        if [ -f "$CANDIDATE" ]; then
+                            FILE_TO_PROCESS="$CANDIDATE"
+                        fi
+                    fi
+
+                    if [ ! -f "$FILE_TO_PROCESS" ]; then
                         echo "No existe el archivo markdown: $MARKDOWN_FILE"
                         exit 1
                     fi
-                    BASENAME="$(basename "$MARKDOWN_FILE" .md)"
-                    npx --prefix Jenkins/Ej3 marp "$MARKDOWN_FILE" --pdf --output "Jenkins/Ej3/pdf/${BASENAME}.pdf"
+
+                    BASENAME="$(basename "$FILE_TO_PROCESS" .md)"
+                    npx --prefix Jenkins/Ej3 marp "$FILE_TO_PROCESS" --pdf --output "Jenkins/Ej3/pdf/${BASENAME}.pdf"
                 '''
             }
         }
