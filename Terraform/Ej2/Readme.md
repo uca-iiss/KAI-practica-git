@@ -87,6 +87,13 @@ resource "docker_container" "mariadb_container" {
     volume_name    = docker_volume.my_volume_bd.name
     container_path = "/var/lib/mysql"
   }
+  healthcheck {
+    test     = ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-p${var.wordpress_password}"]
+    interval = "10s"
+    timeout  = "5s"
+    retries  = 5
+    start_period = "20s" # Tiempo de cortesía mientras se crea la BD por primera vez
+  }
   lifecycle {
     prevent_destroy = true
   }
