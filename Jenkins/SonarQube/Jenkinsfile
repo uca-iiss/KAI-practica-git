@@ -83,8 +83,8 @@ pipeline {
                     withSonarQubeEnv('SonarQubeLocal') {
                         sh '''
                             npx sonar-scanner \
-                              -Dsonar.projectKey=jenkins-sonarqube-marp \
-                              -Dsonar.projectName=jenkins-sonarqube-marp \
+                              -Dsonar.projectKey=KAI_SQ \
+                              -Dsonar.projectName=KAI_SQ \
                               -Dsonar.projectVersion=${BUILD_NUMBER} \
                               -Dsonar.sourceEncoding=UTF-8 \
                               -Dsonar.sources=. \
