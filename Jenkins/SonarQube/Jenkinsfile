@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        dockerfile {
-            filename 'Dockerfile.agent'
-            dir 'Jenkins/SonarQube'
-        }
-    }
+    agent none
     
     options {
         timeout(time: 30, unit: 'MINUTES')
@@ -20,12 +15,26 @@ pipeline {
 
     stages {
         stage('Checkout') {
+            agent {
+                dockerfile {
+                    filename 'Dockerfile.agent'
+                    dir 'Jenkins/SonarQube'
+                    reuseNode true
+                }
+            }
             steps {
                 checkout scm
             }
         }
 
         stage('Instalacion de dependencias') {
+            agent {
+                dockerfile {
+                    filename 'Dockerfile.agent'
+                    dir 'Jenkins/SonarQube'
+                    reuseNode true
+                }
+            }
             steps {
                 dir('Jenkins/SonarQube') {
                     sh 'npm install --no-save @marp-team/marp-cli'
@@ -34,6 +43,13 @@ pipeline {
         }
 
         stage('Generacion del PDF') {
+            agent {
+                dockerfile {
+                    filename 'Dockerfile.agent'
+                    dir 'Jenkins/SonarQube'
+                    reuseNode true
+                }
+            }
             steps {
                 dir('Jenkins/SonarQube') {
                     sh '''
@@ -77,6 +93,7 @@ pipeline {
         }
 
         stage('Quality Gate') {
+            agent any
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
@@ -85,6 +102,13 @@ pipeline {
         }
 
         stage('Archivado del artefacto') {
+            agent {
+                dockerfile {
+                    filename 'Dockerfile.agent'
+                    dir 'Jenkins/SonarQube'
+                    reuseNode true
+                }
+            }
             steps {
                 archiveArtifacts artifacts: 'Jenkins/SonarQube/pdf/*.pdf', fingerprint: true, onlyIfSuccessful: true
             }
