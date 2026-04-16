@@ -74,7 +74,6 @@ pipeline {
                 dockerfile {
                     filename 'Dockerfile.agent'
                     dir 'Jenkins/SonarQube'
-                    args '--network sonarqube_network'
                     reuseNode true
                 }
             }
@@ -85,8 +84,12 @@ pipeline {
                             npx sonar-scanner \
                                 -Dsonar.projectKey=KAI_SQ \
                                 -Dsonar.sources=. \
-                                -Dsonar.host.url=http://localhost:9000 \
-                                -Dsonar.login=sqp_1eb154cddd06f1c09e1625a0f5ebb8dd17a65895
+                                -Dsonar.projectName=KAI_SQ \
+                                -Dsonar.projectVersion=${BUILD_NUMBER} \
+                                -Dsonar.host.url=http://host.docker.internal:9000 \
+                                -Dsonar.login=${SONAR_AUTH_TOKEN} \
+                                -Dsonar.sourceEncoding=UTF-8 \
+                                -Dsonar.exclusions=**/pdf/**,**/node_modules/**
                         '''
                     }
                 }
