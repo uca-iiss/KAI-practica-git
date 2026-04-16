@@ -37,7 +37,7 @@ pipeline {
             }
             steps {
                 dir('Jenkins/SonarQube') {
-                    sh 'npm install --no-save @marp-team/marp-cli'
+                    sh 'npm install --no-save @marp-team/marp-cli sonar-scanner'
                 }
             }
         }
@@ -81,7 +81,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQubeLocal') {
                     sh '''
-                        sonar-scanner \
+                        npx sonar-scanner \
                           -Dsonar.projectKey=jenkins-sonarqube-marp \
                           -Dsonar.projectName=jenkins-sonarqube-marp \
                           -Dsonar.projectVersion=${BUILD_NUMBER} \
