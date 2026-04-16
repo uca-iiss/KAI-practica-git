@@ -91,7 +91,7 @@ pipeline {
                             status="PENDING"
                             while [ $SECONDS -lt $end ]; do
                                 response="$(curl -s -u "$SONARQUBE_TOKEN:" "http://host.docker.internal:9000/api/qualitygates/project_status?projectKey=KAI_SQ")"
-                                status="$(echo "$response" | sed -n 's/.*\"status\":\"\([A-Z]*\)\".*/\1/p' | head -n 1)"
+                                status="$(echo "$response" | tr ',' '\n' | grep '"status"' | head -n 1 | cut -d'"' -f4)"
                                 if [ "$status" = "OK" ] || [ "$status" = "ERROR" ] || [ "$status" = "WARN" ]; then
                                     break
                                 fi
