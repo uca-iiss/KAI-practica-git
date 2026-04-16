@@ -30,8 +30,7 @@ services:
       - DOCKER_CERT_PATH=/certs/client
       - DOCKER_TLS_VERIFY=1
       - CASC_JENKINS_CONFIG=/usr/share/jenkins/casc_configs/jenkins.yaml
-      - SONARQUBE_TOKEN=${SONARQUBE_TOKEN:-changeme}
-      - SONARQUBE_ADMIN_PASSWORD=${SONARQUBE_ADMIN_PASSWORD:-admin}
+      - SONARQUBE_ADMIN_PASSWORD=admin
     ports:
       - "8080:8080"
       - "50000:50000"
@@ -70,7 +69,7 @@ services:
       "
       echo 'Creando webhook de SonarQube para Jenkins...';
       AUTH_USER=admin;
-      AUTH_PASS=${SONARQUBE_ADMIN_PASSWORD:-admin};
+      AUTH_PASS=admin;
       until curl -sS 'http://sonarqube:9000/api/system/status' | grep -q '"status"'; do
         echo 'Esperando a SonarQube...';
         sleep 5;
