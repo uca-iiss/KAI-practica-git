@@ -1,5 +1,10 @@
 FROM node:22-bookworm
 USER root
-RUN apt-get update && apt-get install -y chromium && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y chromium openjdk-17-jre-headless wget unzip && rm -rf /var/lib/apt/lists/*
+RUN wget -qO /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-6.1.0.4477-linux-x64.zip \
+	&& unzip -q /tmp/sonar-scanner.zip -d /opt \
+	&& mv /opt/sonar-scanner-6.1.0.4477-linux-x64 /opt/sonar-scanner \
+	&& rm -f /tmp/sonar-scanner.zip
 ENV CHROME_PATH=/usr/bin/chromium
+ENV PATH="/opt/sonar-scanner/bin:${PATH}"
 USER node

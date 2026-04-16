@@ -71,8 +71,9 @@ pipeline {
 
         stage('Analisis SonarQube') {
             agent {
-                docker {
-                    image 'sonarsource/sonar-scanner-cli:latest'
+                dockerfile {
+                    filename 'Dockerfile.agent'
+                    dir 'Jenkins/SonarQube'
                     args '--network sonarqube_network'
                     reuseNode true
                 }
