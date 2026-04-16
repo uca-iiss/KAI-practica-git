@@ -1,0 +1,93 @@
+pipeline {
+    agent {
+        dockerfile {
+            filename 'Dockerfile.agent'
+            dir 'Jenkins/SonarQube'
+        }
+    }
+    
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+    }
+    triggers {
+        pollSCM('H * * * *')
+    }
+    parameters {
+        string(name: 'MARKDOWN_FILE', defaultValue: 'origen.md', description: 'Nombre del archivo markdown en la carpeta SonarQube')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Instalacion de dependencias') {
+            steps {
+                dir('Jenkins/SonarQube') {
+                    sh 'npm install --no-save @marp-team/marp-cli'
+                }
+            }
+        }
+
+        stage('Generacion del PDF') {
+            steps {
+                dir('Jenkins/SonarQube') {
+                    sh '''
+                        mkdir -p pdf
+                        MD_FILE="$MARKDOWN_FILE"
+                        if [ ! -f "$MD_FILE" ]; then
+                            MD_FILE="$(basename "$MARKDOWN_FILE")"
+                        fi
+                        if [ ! -f "$MD_FILE" ]; then
+                            echo "No existe el archivo markdown: $MARKDOWN_FILE"
+                            exit 1
+                        fi
+                        BASENAME="$(basename "$MD_FILE" .md)"
+                        npx marp "$MD_FILE" --pdf --output "pdf/${BASENAME}.pdf"
+                    '''
+                }
+            }
+        }
+
+        stage('Analisis SonarQube') {
+            agent {
+                docker {
+                    image 'sonarsource/sonar-scanner-cli:latest'
+                    args '--network sonarqube_network'
+                    reuseNode true
+                }
+            }
+            steps {
+                withSonarQubeEnv('SonarQubeLocal') {
+                    sh '''
+                        sonar-scanner \
+                          -Dsonar.projectKey=jenkins-sonarqube-marp \
+                          -Dsonar.projectName=jenkins-sonarqube-marp \
+                          -Dsonar.projectVersion=${BUILD_NUMBER} \
+                          -Dsonar.sourceEncoding=UTF-8 \
+                          -Dsonar.sources=Jenkins/SonarQube \
+                          -Dsonar.exclusions=**/pdf/**,**/node_modules/**
+                    '''
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage('Archivado del artefacto') {
+            steps {
+                archiveArtifacts artifacts: 'Jenkins/SonarQube/pdf/*.pdf', fingerprint: true, onlyIfSuccessful: true
+            }
+        }
+    }
+}
