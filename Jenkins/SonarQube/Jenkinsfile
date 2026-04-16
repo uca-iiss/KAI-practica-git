@@ -57,19 +57,22 @@ pipeline {
         stage('Analisis SonarQube') {
             steps {
                 dir('Jenkins/SonarQube') {
-                    withSonarQubeEnv('SonarQubeLocal') {
-                        sh '''
-                            npx sonar-scanner \
-                                -Dsonar.projectKey=KAI_SQ \
-                                -Dsonar.sources=. \
-                                -Dsonar.projectName=KAI_SQ \
-                                -Dsonar.projectVersion=${BUILD_NUMBER} \
-                                -Dsonar.host.url=http://host.docker.internal:9000 \
-                                -Dsonar.login=${SONAR_AUTH_TOKEN} \
-                                -Dsonar.sourceEncoding=UTF-8 \
-                                -Dsonar.exclusions=**/pdf/**,**/node_modules/**
-                        '''
-                    }
+                    sh '''
+                        if [ -z "$SONARQUBE_TOKEN" ]; then
+                            echo "SONARQUBE_TOKEN no esta definido"
+                            exit 1
+                        fi
+
+                        npx sonar-scanner \
+                            -Dsonar.projectKey=KAI_SQ \
+                            -Dsonar.sources=. \
+                            -Dsonar.projectName=KAI_SQ \
+                            -Dsonar.projectVersion=${BUILD_NUMBER} \
+                            -Dsonar.host.url=http://host.docker.internal:9000 \
+                            -Dsonar.login=${SONARQUBE_TOKEN} \
+                            -Dsonar.sourceEncoding=UTF-8 \
+                            -Dsonar.exclusions=**/pdf/**,**/node_modules/**
+                    '''
                 }
             }
         }
@@ -77,7 +80,31 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
+                    dir('Jenkins/SonarQube') {
+                        sh '''
+                            if [ -z "$SONARQUBE_TOKEN" ]; then
+                                echo "SONARQUBE_TOKEN no esta definido"
+                                exit 1
+                            fi
+
+                            end=$((SECONDS+300))
+                            status="PENDING"
+                            while [ $SECONDS -lt $end ]; do
+                                response="$(curl -s -u "$SONARQUBE_TOKEN:" "http://host.docker.internal:9000/api/qualitygates/project_status?projectKey=KAI_SQ")"
+                                status="$(echo "$response" | sed -n 's/.*\"status\":\"\([A-Z]*\)\".*/\1/p' | head -n 1)"
+                                if [ "$status" = "OK" ] || [ "$status" = "ERROR" ] || [ "$status" = "WARN" ]; then
+                                    break
+                                fi
+                                sleep 5
+                            done
+
+                            echo "Quality Gate status: $status"
+                            if [ "$status" != "OK" ]; then
+                                echo "Quality Gate no superado"
+                                exit 1
+                            fi
+                        '''
+                    }
                 }
             }
         }
