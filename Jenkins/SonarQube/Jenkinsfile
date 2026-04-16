@@ -17,6 +17,7 @@ pipeline {
     }
     parameters {
         string(name: 'MARKDOWN_FILE', defaultValue: 'origen.md', description: 'Nombre del archivo markdown en la carpeta SonarQube')
+        password(name: 'SONAR_TOKEN_OVERRIDE', defaultValue: '', description: 'Token de SonarQube opcional (si no se define, usa SONARQUBE_TOKEN del entorno)')
     }
 
     stages {
@@ -57,19 +58,26 @@ pipeline {
         stage('Analisis SonarQube') {
             steps {
                 dir('Jenkins/SonarQube') {
-                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONARQUBE_TOKEN')]) {
-                        sh '''
-                            npx sonar-scanner \
-                                -Dsonar.projectKey=KAI_SQ \
-                                -Dsonar.sources=. \
-                                -Dsonar.projectName=KAI_SQ \
-                                -Dsonar.projectVersion=${BUILD_NUMBER} \
-                                -Dsonar.host.url=http://host.docker.internal:9000 \
-                                -Dsonar.login=${SONARQUBE_TOKEN} \
-                                -Dsonar.sourceEncoding=UTF-8 \
-                                -Dsonar.exclusions=**/pdf/**,**/node_modules/**
-                        '''
-                    }
+                    sh '''
+                        TOKEN="$SONAR_TOKEN_OVERRIDE"
+                        if [ -z "$TOKEN" ]; then
+                            TOKEN="$SONARQUBE_TOKEN"
+                        fi
+                        if [ -z "$TOKEN" ]; then
+                            echo "No hay token disponible. Define SONAR_TOKEN_OVERRIDE o SONARQUBE_TOKEN."
+                            exit 1
+                        fi
+
+                        npx sonar-scanner \
+                            -Dsonar.projectKey=KAI_SQ \
+                            -Dsonar.sources=. \
+                            -Dsonar.projectName=KAI_SQ \
+                            -Dsonar.projectVersion=${BUILD_NUMBER} \
+                            -Dsonar.host.url=http://host.docker.internal:9000 \
+                            -Dsonar.login=${TOKEN} \
+                            -Dsonar.sourceEncoding=UTF-8 \
+                            -Dsonar.exclusions=**/pdf/**,**/node_modules/**
+                    '''
                 }
             }
         }
@@ -78,26 +86,33 @@ pipeline {
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
                     dir('Jenkins/SonarQube') {
-                        withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONARQUBE_TOKEN')]) {
-                            sh '''
-                                end=$((SECONDS+300))
-                                status="PENDING"
-                                while [ $SECONDS -lt $end ]; do
-                                    response="$(curl -s -u "$SONARQUBE_TOKEN:" "http://host.docker.internal:9000/api/qualitygates/project_status?projectKey=KAI_SQ")"
-                                    status="$(echo "$response" | tr ',' '\n' | grep '"status"' | head -n 1 | cut -d'"' -f4)"
-                                    if [ "$status" = "OK" ] || [ "$status" = "ERROR" ] || [ "$status" = "WARN" ]; then
-                                        break
-                                    fi
-                                    sleep 5
-                                done
+                        sh '''
+                            TOKEN="$SONAR_TOKEN_OVERRIDE"
+                            if [ -z "$TOKEN" ]; then
+                                TOKEN="$SONARQUBE_TOKEN"
+                            fi
+                            if [ -z "$TOKEN" ]; then
+                                echo "No hay token disponible. Define SONAR_TOKEN_OVERRIDE o SONARQUBE_TOKEN."
+                                exit 1
+                            fi
 
-                                echo "Quality Gate status: $status"
-                                if [ "$status" != "OK" ]; then
-                                    echo "Quality Gate no superado"
-                                    exit 1
+                            end=$((SECONDS+300))
+                            status="PENDING"
+                            while [ $SECONDS -lt $end ]; do
+                                response="$(curl -s -u "$TOKEN:" "http://host.docker.internal:9000/api/qualitygates/project_status?projectKey=KAI_SQ")"
+                                status="$(echo "$response" | tr ',' '\n' | grep '"status"' | head -n 1 | cut -d'"' -f4)"
+                                if [ "$status" = "OK" ] || [ "$status" = "ERROR" ] || [ "$status" = "WARN" ]; then
+                                    break
                                 fi
-                            '''
-                        }
+                                sleep 5
+                            done
+
+                            echo "Quality Gate status: $status"
+                            if [ "$status" != "OK" ]; then
+                                echo "Quality Gate no superado"
+                                exit 1
+                            fi
+                        '''
                     }
                 }
             }
