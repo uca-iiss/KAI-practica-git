@@ -61,6 +61,7 @@ services:
   sonarqube-webhook-init:
     image: curlimages/curl:8.11.1
     container_name: sonarqube_webhook_init
+    profiles: ["bootstrap"]
     depends_on:
       - sonarqube
     restart: "no"
@@ -74,13 +75,13 @@ services:
         echo 'Esperando a SonarQube...';
         sleep 5;
       done;
-      curl -sS -u ${AUTH_USER}:${AUTH_PASS} -X POST
+      curl -sS -u $$AUTH_USER:$$AUTH_PASS -X POST
         'http://sonarqube:9000/api/webhooks/create'
         --data-urlencode 'name=JenkinsWebhook'
         --data-urlencode 'url=http://jenkins:8080/sonarqube-webhook/' || true;
       echo;
       echo 'Webhooks configurados:';
-      curl -sS -u ${AUTH_USER}:${AUTH_PASS}
+      curl -sS -u $$AUTH_USER:$$AUTH_PASS
         'http://sonarqube:9000/api/webhooks/list';
       "
     networks:
