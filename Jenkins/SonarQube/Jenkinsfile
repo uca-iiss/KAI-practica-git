@@ -79,16 +79,18 @@ pipeline {
                 }
             }
             steps {
-                withSonarQubeEnv('SonarQubeLocal') {
-                    sh '''
-                        npx sonar-scanner \
-                          -Dsonar.projectKey=jenkins-sonarqube-marp \
-                          -Dsonar.projectName=jenkins-sonarqube-marp \
-                          -Dsonar.projectVersion=${BUILD_NUMBER} \
-                          -Dsonar.sourceEncoding=UTF-8 \
-                          -Dsonar.sources=Jenkins/SonarQube \
-                          -Dsonar.exclusions=**/pdf/**,**/node_modules/**
-                    '''
+                dir('Jenkins/SonarQube') {
+                    withSonarQubeEnv('SonarQubeLocal') {
+                        sh '''
+                            npx sonar-scanner \
+                              -Dsonar.projectKey=jenkins-sonarqube-marp \
+                              -Dsonar.projectName=jenkins-sonarqube-marp \
+                              -Dsonar.projectVersion=${BUILD_NUMBER} \
+                              -Dsonar.sourceEncoding=UTF-8 \
+                              -Dsonar.sources=. \
+                              -Dsonar.exclusions=**/pdf/**,**/node_modules/**
+                        '''
+                    }
                 }
             }
         }
