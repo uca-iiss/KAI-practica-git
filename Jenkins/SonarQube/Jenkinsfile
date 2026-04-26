@@ -56,7 +56,7 @@ pipeline {
         stage('Analisis SonarQube') {
             steps {
                 dir('Jenkins/SonarQube') {
-                    withSonarQubeEnv(SonarQube) {
+                    withSonarQubeEnv('SonarQube') {
                         sh '''
                             npx sonar-scanner \
                               -Dsonar.projectKey=KAI_SQ \
