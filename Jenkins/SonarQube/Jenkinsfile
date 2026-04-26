@@ -94,15 +94,17 @@ pipeline {
                                     exit 1
                                 fi
 
-                                end=$((SECONDS+300))
+                                max_attempts=60
+                                attempt=0
                                 CE_STATUS="PENDING"
                                 CE_JSON=""
-                                while [ $SECONDS -lt $end ]; do
+                                while [ "$attempt" -lt "$max_attempts" ]; do
                                     CE_JSON="$(curl -s -u "$SONAR_AUTH_TOKEN:" "$SONAR_URL/api/ce/task?id=$CE_TASK_ID")"
                                     CE_STATUS="$(echo "$CE_JSON" | grep -o '"status":"[^"]*"' | head -n 1 | cut -d'"' -f4)"
                                     if [ "$CE_STATUS" = "SUCCESS" ] || [ "$CE_STATUS" = "FAILED" ] || [ "$CE_STATUS" = "CANCELED" ]; then
                                         break
                                     fi
+                                    attempt=$((attempt + 1))
                                     sleep 5
                                 done
 
