@@ -77,7 +77,57 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
+                    dir('Jenkins/SonarQube') {
+                        withSonarQubeEnv('SonarQube') {
+                            sh '''
+                                SONAR_URL="http://sonarqube:9000"
+                                REPORT_FILE=".scannerwork/report-task.txt"
+
+                                if [ ! -f "$REPORT_FILE" ]; then
+                                    echo "No se encontro $REPORT_FILE"
+                                    exit 1
+                                fi
+
+                                CE_TASK_ID="$(grep '^ceTaskId=' "$REPORT_FILE" | cut -d'=' -f2)"
+                                if [ -z "$CE_TASK_ID" ]; then
+                                    echo "No se pudo leer ceTaskId"
+                                    exit 1
+                                fi
+
+                                end=$((SECONDS+300))
+                                CE_STATUS="PENDING"
+                                CE_JSON=""
+                                while [ $SECONDS -lt $end ]; do
+                                    CE_JSON="$(curl -s -u "$SONAR_AUTH_TOKEN:" "$SONAR_URL/api/ce/task?id=$CE_TASK_ID")"
+                                    CE_STATUS="$(echo "$CE_JSON" | grep -o '"status":"[^"]*"' | head -n 1 | cut -d'"' -f4)"
+                                    if [ "$CE_STATUS" = "SUCCESS" ] || [ "$CE_STATUS" = "FAILED" ] || [ "$CE_STATUS" = "CANCELED" ]; then
+                                        break
+                                    fi
+                                    sleep 5
+                                done
+
+                                if [ "$CE_STATUS" != "SUCCESS" ]; then
+                                    echo "Analisis CE no exitoso: $CE_STATUS"
+                                    exit 1
+                                fi
+
+                                ANALYSIS_ID="$(echo "$CE_JSON" | grep -o '"analysisId":"[^"]*"' | head -n 1 | cut -d'"' -f4)"
+                                if [ -z "$ANALYSIS_ID" ]; then
+                                    echo "No se pudo obtener analysisId"
+                                    exit 1
+                                fi
+
+                                QG_JSON="$(curl -s -u "$SONAR_AUTH_TOKEN:" "$SONAR_URL/api/qualitygates/project_status?analysisId=$ANALYSIS_ID")"
+                                QG_STATUS="$(echo "$QG_JSON" | grep -o '"status":"[^"]*"' | head -n 1 | cut -d'"' -f4)"
+
+                                echo "Quality Gate status: $QG_STATUS"
+                                if [ "$QG_STATUS" != "OK" ]; then
+                                    echo "Quality Gate no superado"
+                                    exit 1
+                                fi
+                            '''
+                        }
+                    }
                 }
             }
         }
