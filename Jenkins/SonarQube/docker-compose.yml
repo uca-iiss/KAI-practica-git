@@ -29,8 +29,6 @@ services:
       - DOCKER_HOST=tcp://docker:2376
       - DOCKER_CERT_PATH=/certs/client
       - DOCKER_TLS_VERIFY=1
-      - CASC_JENKINS_CONFIG=/usr/share/jenkins/casc_configs/jenkins.yaml
-      - SONARQUBE_ADMIN_PASSWORD=admin
     ports:
       - "8080:8080"
       - "50000:50000"
@@ -39,7 +37,6 @@ services:
       - jenkins-docker-certs:/certs/client:ro
     networks:
       - jenkins
-      - sonarqube_network
   sonarqube:
     image: sonarqube:lts-community
     container_name: sonarqube
@@ -55,34 +52,6 @@ services:
       - sonarqube_data:/opt/sonarqube/data
       - sonarqube_logs:/opt/sonarqube/logs
       - sonarqube_extensions:/opt/sonarqube/extensions
-    networks:
-      - sonarqube_network
-  sonarqube-webhook-init:
-    image: curlimages/curl:8.11.1
-    container_name: sonarqube_webhook_init
-    profiles: ["bootstrap"]
-    depends_on:
-      - sonarqube
-    restart: "no"
-    entrypoint: ["sh", "-c"]
-    command: >
-      "
-      echo 'Creando webhook de SonarQube para Jenkins...';
-      AUTH_USER=admin;
-      AUTH_PASS=admin;
-      until curl -sS 'http://sonarqube:9000/api/system/status' | grep -q '"status"'; do
-        echo 'Esperando a SonarQube...';
-        sleep 5;
-      done;
-      curl -sS -u $$AUTH_USER:$$AUTH_PASS -X POST
-        'http://sonarqube:9000/api/webhooks/create'
-        --data-urlencode 'name=JenkinsWebhook'
-        --data-urlencode 'url=http://jenkins:8080/sonarqube-webhook/' || true;
-      echo;
-      echo 'Webhooks configurados:';
-      curl -sS -u $$AUTH_USER:$$AUTH_PASS
-        'http://sonarqube:9000/api/webhooks/list';
-      "
     networks:
       - sonarqube_network
   db:

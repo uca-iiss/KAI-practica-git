@@ -1,5 +1,10 @@
 pipeline {
-    agent none
+    agent {
+        dockerfile {
+            filename 'Dockerfile'
+            dir 'Jenkins/SonarQube'
+        }
+    }
     
     options {
         timeout(time: 30, unit: 'MINUTES')
@@ -15,26 +20,12 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            agent {
-                dockerfile {
-                    filename 'Dockerfile.agent'
-                    dir 'Jenkins/SonarQube'
-                    reuseNode true
-                }
-            }
             steps {
                 checkout scm
             }
         }
 
         stage('Instalacion de dependencias') {
-            agent {
-                dockerfile {
-                    filename 'Dockerfile.agent'
-                    dir 'Jenkins/SonarQube'
-                    reuseNode true
-                }
-            }
             steps {
                 dir('Jenkins/SonarQube') {
                     sh 'npm install --no-save @marp-team/marp-cli sonar-scanner'
@@ -43,13 +34,6 @@ pipeline {
         }
 
         stage('Generacion del PDF') {
-            agent {
-                dockerfile {
-                    filename 'Dockerfile.agent'
-                    dir 'Jenkins/SonarQube'
-                    reuseNode true
-                }
-            }
             steps {
                 dir('Jenkins/SonarQube') {
                     sh '''
@@ -70,36 +54,32 @@ pipeline {
         }
 
         stage('Analisis SonarQube') {
-            agent {
-                dockerfile {
-                    filename 'Dockerfile.sonar'
-                    dir 'Jenkins/SonarQube'
-                    reuseNode true
-                }
-            }
             steps {
                 dir('Jenkins/SonarQube') {
                     withSonarQubeEnv('SonarQubeLocal') {
                         sh '''
-                            sonar-scanner \
-                                -Dsonar.projectKey=KAI_SQ \
-                                -Dsonar.sources=. \
-                                -Dsonar.host.url=http://localhost:9000 \
-                                -Dsonar.login=sqp_1eb154cddd06f1c09e1625a0f5ebb8dd17a65895
+                            npx sonar-scanner \
+                              -Dsonar.projectKey=KAI_SQ \
+                              -Dsonar.projectName=KAI_SQ \
+                              -Dsonar.projectVersion=${BUILD_NUMBER} \
+                              -Dsonar.sources=. \
+                              -Dsonar.sourceEncoding=UTF-8 \
+                              -Dsonar.exclusions=**/pdf/**,**/node_modules/**
                         '''
                     }
                 }
             }
         }
 
-        stage('Archivado del artefacto') {
-            agent {
-                dockerfile {
-                    filename 'Dockerfile.agent'
-                    dir 'Jenkins/SonarQube'
-                    reuseNode true
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
                 }
             }
+        }
+
+        stage('Archivado del artefacto') {
             steps {
                 archiveArtifacts artifacts: 'Jenkins/SonarQube/pdf/*.pdf', fingerprint: true, onlyIfSuccessful: true
             }
