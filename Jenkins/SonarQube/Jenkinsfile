@@ -62,6 +62,8 @@ pipeline {
                               -Dsonar.projectKey=KAI_SQ \
                               -Dsonar.projectName=KAI_SQ \
                               -Dsonar.projectVersion=${BUILD_NUMBER} \
+                              -Dsonar.host.url=http://host.docker.internal:9000 \
+                              -Dsonar.login=${SONAR_AUTH_TOKEN} \
                               -Dsonar.sources=. \
                               -Dsonar.sourceEncoding=UTF-8 \
                               -Dsonar.exclusions=**/pdf/**,**/node_modules/**
