@@ -18,6 +18,7 @@ services:
       jenkins:
         aliases:
           - docker
+      sonarqube_network:
   jenkins:
     image: my-custom-jenkins
     build: .
@@ -37,6 +38,7 @@ services:
       - jenkins-docker-certs:/certs/client:ro
     networks:
       - jenkins
+      - sonarqube_network
   sonarqube:
     image: sonarqube:lts-community
     container_name: sonarqube
